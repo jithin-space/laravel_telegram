@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/bot/getupdates',function(){
-	$updates = Telegram::getUpdates();
-	return (json_encode($updates));
+	$response = Telegram::getMe();
+	return (json_encode($response));
 });
 	

@@ -36,9 +36,10 @@ return [
             'username'            => 'JithinTestBot_bot',
             'token'               =>  '701989742:AAGo7Ify2ekr5sBMByzNxtClan7X8WR9VR0',
             'certificate_path'    => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
-            'webhook_url'         => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
+            'webhook_url'         => 'https://bot.computingfreedomcollective.com/hook',
             'commands'            => [
                 //Acme\Project\Commands\MyTelegramBot\BotCommand::class
+		 App\Http\Telegram\Commands\StartCommand::class,
             ],
         ],
 

@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Storage;
+use Telegram;
 class WebhookController extends Controller
 {
     //
@@ -11,5 +12,12 @@ class WebhookController extends Controller
 	{
 		//
 		//
+
+		//$updates = Telegram::getWebhookUpdates();
+		$updates = Telegram::commandsHandler(true);
+		Storage::append('file.txt',json_encode($updates));
+
+
+		return json_encode($request);
 	}
 }
