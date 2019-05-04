@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMessagesTable extends Migration
+class CreateTextMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-    
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('text_messages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('tel_msg_id');
-            $table->timestamp('sent_on');
+            $table->string('text');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreateMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('text_messages');
     }
 }

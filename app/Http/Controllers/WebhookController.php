@@ -41,17 +41,24 @@ class WebhookController extends Controller
 			$message->file_id= $inMessage['document']['file_id'];
 			$message->file_size = $inMessage['document']['file_size'];
 
+
 		}else if(array_key_exists('text',$inMessage)){
 			$message = new \App\TextMessage;
 			$message->text = $inMessage['text'];
+
 		}
 
-		$message->tel_msg_id = $inMessage['message_id'];
-		$message->date = $message['date'];
 		$message->save();
+
+		$wrapperMessage = new \App\Message;
+		$wrapperMessage->tel_msg_id = $inMessage['message_id'];
+		$wrapperMessage->sent_on = $message['date'];
+		$wrapperMessage->save();
+
+		$message->message()->save($wrapperMessage);
 		$message->from()->save($user);
 
 
-		return json_encode($request);
+		return 'ok';
 	}
 }
