@@ -13,13 +13,16 @@ class WebhookController extends Controller
 		//
 		//
 
-		//$updates = Telegram::getWebhookUpdates();
+//		$updates = Telegram::getWebhookUpdates();
 		$updates = Telegram::commandsHandler(true);
 
 		$inMessage = $updates['message'];
 		$telegram_id = $inMessage['from']['id'];
 
 
+		Storage::put('file.txt',$inMessage);
+
+			Storage::put('file.txt',$inMessage['from']['first_name']);
 
 		$user = \App\User::where('telegram_id',$telegram_id)->first();
 
@@ -58,7 +61,6 @@ class WebhookController extends Controller
 		$message->message()->save($wrapperMessage);
 		$message->from()->save($user);
 
-
-		return 'ok';
+		return json_encode($update);
 	}
 }
