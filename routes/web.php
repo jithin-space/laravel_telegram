@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,3 +17,5 @@ Route::get('/', function () {
 });
 
 Route::post('hook','WebhookController@handle');
+
+// Route::get('/update','WebhookController@handleTest');
