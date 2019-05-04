@@ -6,7 +6,9 @@ namespace App;
 //use Illuminate\Contracts\Auth\MustVerifyEmail;
 //use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User 
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
 {
   //  use Notifiable;
 
@@ -36,4 +38,8 @@ class User
     protected $casts = [
         'phone_verified_at' => 'datetime',
     ];
+
+    public function messages(){
+      return $this->hasMany('App\Message');
+    }
 }

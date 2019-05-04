@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
 	    $table->string('first_name');
 	    $table->string('last_name');
 	    $table->bigInteger('telegram_id');
-	    $table->bigInteger('phone_number');
+	    $table->bigInteger('phone_number')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->timestamps();
         });

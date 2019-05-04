@@ -13,11 +13,16 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-    
+
         Schema::create('messages', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('tel_msg_id');
-            $table->timestamp('sent_on');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('messagable_id')->nullable();
+            $table->string('messagable_type')->nullable();
+            // $table->foreign('_id')->references('id')->on('users');
+            $table->date('sent_on');
             $table->timestamps();
         });
     }
