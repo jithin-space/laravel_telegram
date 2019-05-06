@@ -93,7 +93,7 @@ class WebhookController extends Controller
 		}
 
 			if(array_key_exists('document',$inMessage)){
-				$message = new \App\DocMesage;
+				$message = new \App\DocMessage;
 				$message->file_name = $inMessage['document']['file_name'];
 				$message->mime_type = $inMessage['document']['mime_type'];
 				$message->file_id= $inMessage['document']['file_id'];
