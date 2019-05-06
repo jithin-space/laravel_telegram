@@ -27,4 +27,4 @@ Route::get('/users/userCount', 'UserController@userCount');
 Route::resource('/users','UserController',['only'=>['index','show']]);
 Route::resource('/messages','MessageController',['only'=>['index','show']]);
 
-// Route::get('/update','WebhookController@handleTest');
+Route::get('/update','WebhookController@handleTest');
