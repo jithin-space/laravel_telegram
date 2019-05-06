@@ -13,9 +13,18 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+   $users = App\User::count();
+   $messages = \App\Message::count();
+   $textMessages = \App\TextMessage::count();
+   $docMessages = \App\DocMessage::count();
+    return view('welcome',['user'=>$users,'messages'=>$messages,'text'=>$textMessages,'docs'=>$docMessages]);
 });
 
 Route::post('hook','WebhookController@handle');
+
+Route::get('/users/userCount', 'UserController@userCount');
+// Route::get('/varieties/{id}/heat', 'VarietyController@heat')->name('varieties.heat');
+Route::resource('/users','UserController',['only'=>['index','show']]);
+Route::resource('/messages','MessageController',['only'=>['index','show']]);
 
 // Route::get('/update','WebhookController@handleTest');
