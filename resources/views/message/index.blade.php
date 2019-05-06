@@ -63,7 +63,7 @@
                   {{$message->messagable_type}}
                 </td>
                 <td>
-                  {{$message->sent_on}}
+                  {{date('d/m/Y',strtotime($message->sent_on))}}
                 </td>
               </tr>
 

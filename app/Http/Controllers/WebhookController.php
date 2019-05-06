@@ -97,12 +97,15 @@ class WebhookController extends Controller
 				$message->text = $inMessage['text'];
 
 			}
+			else{
+				return 'Ok';
+			}
 
 			$message->save();
 
 			$wrapperMessage = new \App\Message;
 			$wrapperMessage->tel_msg_id = $inMessage['message_id'];
-			$wrapperMessage->sent_on = date('d/m/y',$inMessage['date']);
+			$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
 			// $wrapperMessage->user()->save($user);
 
 			$message->message()->save($wrapperMessage);
