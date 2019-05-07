@@ -127,7 +127,7 @@ class WebhookController extends Controller
 			$message->message()->save($wrapperMessage);
 			$user->messages()->save($wrapperMessage);
 
-			return $wrapperMessage();
+			return $wrapperMessage;
 
 
 

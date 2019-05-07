@@ -23,6 +23,11 @@
       		background-size: cover;
       		backface-visibility: hidden;
       	}
+        li{
+          /* text-decoration: none; */
+          /* list-style-type: none; */
+          list-style: none;
+        }
 
         </style>
     </head>
@@ -57,13 +62,35 @@
                   {{ucfirst($message->tel_msg_id)}}
                 </td>
                 <td>
-                <a href="">  {{$message->user['first_name']}}</a>
+                <a href="">  {{$message->user['first_name']}} &nbsp;{{$message->user['last_name']}}</a>
                 </td>
                 <td>
                   {{$message->messagable_type}}
                 </td>
                 <td>
                   {{date('d/m/Y',strtotime($message->sent_on))}}
+                </td>
+                <td>
+                  <ul>
+                  <?php
+                    switch($message->messagable_type){
+                      case 'App\TextMessage':
+                        echo "<li><h6>Content:&nbsp&nbsp</h6>".$message->messagable['text']."</li>";
+                        break;
+                      case 'App\DocMessage':
+                        echo "<li><h6>Content:&nbsp&nbsp</h6>FileName:".$message->messagable['file_name']."</li>";
+                        echo "<li>Type:".$message->messagable['mime_type']."</li>";
+                        echo "<li>Size(in bytes):".$message->messagable['file_size']."</li>";
+                        break;
+                      case 'App\Photo':
+                        echo "<li><h6>Content:&nbsp&nbsp</h6>FileName:".$message->messagable['file_id']."</li>";
+                        echo "<li>Widht(in Thumb):".$message->messagable['width']."</li>";
+                        echo "<li>Height(in Thumb):".$message->messagable['height']."</li>";
+                        break;
+                    }
+                   ?>
+                 </ul>
+
                 </td>
               </tr>
 
@@ -89,13 +116,19 @@
 
 
 
+        var prevNode = "";
+        var prevRow = "";
+
         var datatable =$('#dc-table-chart').DataTable({
 
           "columnDefs": [ {
             "searchable": false,
             "orderable": false,
             "targets": 0
-        } ],
+        } ,{
+            "targets":5,
+            "visible": false
+        }],
         "order": [[ 1, 'asc' ]],
         "lengthMenu": [[5,10, 15,20, -1], [5, 10, 15,20, "All"]]
         });
@@ -104,7 +137,31 @@
        datatable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
            cell.innerHTML = i+1;
        } );
+
    } ).draw();
+
+
+          datatable.on('click', 'tr[role="row"]', function() {
+              var tr = $(this);
+              var row = datatable.row(tr);
+
+              if (row.child.isShown()) {
+                  // This row is already open - close it
+                  row.child.hide();
+                  tr.removeClass('shown');
+              } else {
+                  // Open this row
+                  if (prevNode != "") {
+                      prevNode.child.hide();
+                      prevRow.removeClass('shown');
+                  }
+                  row.child(row.data()[5]).show();
+                  tr.addClass('shown');
+                  prevNode = row;
+                  prevRow = tr;
+
+              }
+          });
 
 
         </script>
