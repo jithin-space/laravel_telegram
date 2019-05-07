@@ -25,7 +25,7 @@ class WebhookController extends Controller
 							// first time message
 							$user = new \App\User;
 							$user->first_name = $inMessage['from']['first_name'];
-							$user->last_name = $inMessage['from']['last_name'];
+							$user->last_name = isset($inMessage['from']['last_name'])?$inMessage['from']['last_name']:" ";
 							$user->telegram_id = $inMessage['from']['id'];
 							$user->save();
 						}
@@ -72,22 +72,20 @@ class WebhookController extends Controller
 	}
 	public function handle(Request $request)
 	{
-		//
-		//
 
 		$updates = Telegram::getWebhookUpdates();
 	//	$updates = Telegram::commandsHandler(true);
 
-	$inMessage = $updates['message'];
-	$telegram_id = $inMessage['from']['id'];
+		$inMessage = $updates['message'];
+		$telegram_id = $inMessage['from']['id'];
 
-	$user = \App\User::where('telegram_id',$telegram_id)->first();
+		$user = \App\User::where('telegram_id',$telegram_id)->first();
 
 		if(!$user){
 			// first time message
 			$user = new \App\User;
 			$user->first_name = $inMessage['from']['first_name'];
-			$user->last_name = $inMessage['from']['last_name'];
+			$user->last_name = isset($inMessage['from']['last_name'])?$inMessage['from']['last_name']:" ";
 			$user->telegram_id = $inMessage['from']['id'];
 			$user->save();
 		}
@@ -128,8 +126,6 @@ class WebhookController extends Controller
 			$user->messages()->save($wrapperMessage);
 
 			return $wrapperMessage;
-
-
 
 	 }
 }
