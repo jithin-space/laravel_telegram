@@ -19,7 +19,8 @@ class WebhookController extends Controller
 					$inMessage = $updates['message'];
 					$telegram_id = $inMessage['from']['id'];
 
-					$user = \App\User::where('telegram_id',$telegram_id)->first();
+								
+						$user = \App\User::where('telegram_id',$telegram_id)->first();
 
 						if(!$user){
 							// first time message
@@ -29,6 +30,13 @@ class WebhookController extends Controller
 							$user->telegram_id = $inMessage['from']['id'];
 							$user->save();
 						}
+						if(! \App\Message::where('tel_msg_id',$inMessage['message_id'])->first()){
+
+
+		$wrapperMessage = new \App\Message;
+							$wrapperMessage->tel_msg_id = $inMessage['message_id'];
+							$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
+	
 
 							if(array_key_exists('document',$inMessage)){
 								$message = new \App\DocMessage;
@@ -57,14 +65,13 @@ class WebhookController extends Controller
 
 							$message->save();
 
-							$wrapperMessage = new \App\Message;
-							$wrapperMessage->tel_msg_id = $inMessage['message_id'];
-							$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
-							// $wrapperMessage->user()->save($user);
+												// $wrapperMessage->user()->save($user);
 
 							$message->message()->save($wrapperMessage);
 							$user->messages()->save($wrapperMessage);
-		}
+
+						}
+							}
 
 
 		return 'Ok';
@@ -90,6 +97,7 @@ class WebhookController extends Controller
 			$user->save();
 		}
 
+		
 			if(array_key_exists('document',$inMessage)){
 				$message = new \App\DocMessage;
 				$message->file_name = $inMessage['document']['file_name'];
