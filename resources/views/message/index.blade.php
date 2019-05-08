@@ -62,10 +62,10 @@
                   {{ucfirst($message->tel_msg_id)}}
                 </td>
                 <td>
-                <a href="">  {{$message->user['first_name']}} &nbsp;{{$message->user['last_name']}}</a>
+                 {{$message->user['first_name']}} &nbsp;{{$message->user['last_name']}}
                 </td>
                 <td>
-                  {{$message->messagable_type}}
+                  {{ explode('\\',$message->messagable_type)[1]}}
                 </td>
                 <td>
                   {{date('d/m/Y',strtotime($message->sent_on))}}
@@ -129,7 +129,7 @@
             "targets":5,
             "visible": false
         }],
-        "order": [[ 1, 'asc' ]],
+        "order": [[ 1, 'desc' ]],
         "lengthMenu": [[5,10, 15,20, -1], [5, 10, 15,20, "All"]]
         });
 

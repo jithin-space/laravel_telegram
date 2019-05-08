@@ -17,7 +17,8 @@ Route::get('/', function () {
    $messages = \App\Message::count();
    $textMessages = \App\TextMessage::count();
    $docMessages = \App\DocMessage::count();
-    return view('welcome',['user'=>$users,'messages'=>$messages,'text'=>$textMessages,'docs'=>$docMessages]);
+   $photo = \App\Photo::count();
+    return view('welcome',['user'=>$users,'messages'=>$messages,'text'=>$textMessages,'docs'=>$docMessages,'photo'=>$photo]);
 });
 
 Route::post('hook','WebhookController@handle');

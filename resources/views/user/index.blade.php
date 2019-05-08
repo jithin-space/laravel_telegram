@@ -62,7 +62,7 @@
                   {{ucfirst($user->telegram_id)}}
                 </td>
                 <td>
-                <a href="">  {{$user['first_name']}} &nbsp;{{$user['last_name']}}</a>
+                 {{$user['first_name']}} &nbsp;{{$user['last_name']}}
                 </td>
                 <td>
                   {{$user->messages()->count()}}
@@ -73,21 +73,15 @@
                 <td>
                   <ul>
                   <?php
-                    // switch($message->messagable_type){
-                    //   case 'App\TextMessage':
-                    //     echo "<li><h6>Content:&nbsp&nbsp</h6>".$message->messagable['text']."</li>";
-                    //     break;
-                    //   case 'App\DocMessage':
-                    //     echo "<li><h6>Content:&nbsp&nbsp</h6>FileName:".$message->messagable['file_name']."</li>";
-                    //     echo "<li>Type:".$message->messagable['mime_type']."</li>";
-                    //     echo "<li>Size(in bytes):".$message->messagable['file_size']."</li>";
-                    //     break;
-                    //   case 'App\Photo':
-                    //     echo "<li><h6>Content:&nbsp&nbsp</h6>FileName:".$message->messagable['file_id']."</li>";
-                    //     echo "<li>Widht(in Thumb):".$message->messagable['width']."</li>";
-                    //     echo "<li>Height(in Thumb):".$message->messagable['height']."</li>";
-                    //     break;
-                    // }
+                    $arr=$user->messages()->with('messagable')->get()->groupBy('messagable_type') ;
+                    $count= $arr->map(function($item,$key){
+                      return collect($item)->count();
+                     });
+                    foreach($count as $key=>$value){
+                      $k = explode("\\",$key)[1];
+                      echo "<li><strong>".$k.":&nbsp&nbsp</strong>".$value."</li>";
+                    }
+
                    ?>
                  </ul>
 
@@ -129,7 +123,7 @@
             "targets":5,
             "visible": false
         }],
-        "order": [[ 1, 'asc' ]],
+        "order": [[ 4, 'desc' ]],
         "lengthMenu": [[5,10, 15,20, -1], [5, 10, 15,20, "All"]]
         });
 
@@ -155,7 +149,7 @@
                       prevNode.child.hide();
                       prevRow.removeClass('shown');
                   }
-                  row.child(row.data()[3]).show();
+                  row.child(row.data()[5]).show();
                   tr.addClass('shown');
                   prevNode = row;
                   prevRow = tr;
