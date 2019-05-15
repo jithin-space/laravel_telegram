@@ -128,8 +128,8 @@ class WebhookController extends Controller
         $updates = Telegram::getWebhookUpdates();
         //	$updates = Telegram::commandsHandler(true);
 
-        if (!array_key_exists('message', $updates)) {
-            if (array_key_exists('edited_message', $updates)) {
+        if (!isset($updates['message'])) {
+            if (isset($updates['edited_message'])) {
                 if (\App\Message::where('tel_msg_id', $updates['message_id'])->first()) {
                     $curMsg = \App\Message::where('tel_msg_id', $updates['message_id'])->first();
 

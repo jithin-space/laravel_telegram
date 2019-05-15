@@ -34,7 +34,7 @@ return [
     'bots'                         => [
         'mybot' => [
             'username'            => 'JithinTestBot_bot',
-            'token'               =>  '701989742:AAGo7Ify2ekr5sBMByzNxtClan7X8WR9VR0',
+            'token'               =>  '701989742:AAGdqr5I9YPr9HlLD_0qo0d4tRkKiilQkuA',
             'certificate_path'    => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
             'webhook_url'         => 'https://bot.computingfreedomcollective.com/hook',
             'commands'            => [
