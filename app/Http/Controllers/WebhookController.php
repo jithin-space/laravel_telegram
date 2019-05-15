@@ -9,223 +9,219 @@ class WebhookController extends Controller
 {
     //
 
-	public function handleTest(){
-		$update = Telegram::getUpdates();
+    public function handleTest()
+    {
+        $update = Telegram::getUpdates();
 
-		echo count($update);
+// echo json_encode($update);
 
-		foreach($update as $updates){
+        foreach ($update as $updates) {
 
-				if(!array_key_exists('message',$updates)){
-					if(array_key_exists('edited_message',$updates)){
-							if( \App\Message::where('tel_msg_id',$updates['message_id'])->first()){
-									$curMsg = \App\Message::where('tel_msg_id',$updates['message_id'])->first();
+						// echo json_encode(isset( $updates['messages']));
 
-									$inMessage = $updates['message'];
-									$message = $curMsg->messagable;
-									if(array_key_exists('document',$inMessage)){
+						// echo json_encode($updates['message']);
 
-										$message->file_name = $inMessage['document']['file_name'];
-										$message->mime_type = $inMessage['document']['mime_type'];
-										$message->file_id= $inMessage['document']['file_id'];
-										$message->file_size = $inMessage['document']['file_size'];
+            if (!isset($updates['message'])) {
+                if (isset($updates['edited_message'])) {
+                    if (\App\Message::where('tel_msg_id', $updates['message_id'])->first()) {
+                        $curMsg = \App\Message::where('tel_msg_id', $updates['message_id'])->first();
 
+                        $inMessage = $updates['message'];
+                        $message   = $curMsg->messagable;
+                        if (array_key_exists('document', $inMessage)) {
 
-									}
-									else if(array_key_exists('text',$inMessage)){
-
-										$message->text = $inMessage['text'];
-
-									}
-									else if(array_key_exists('photo',$inMessage)){
-
-										$message->file_id = $inMessage['photo'][0]['file_id'];
-										$message->file_size = $inMessage['photo'][0]['file_size'];
-										$message->height= $inMessage['photo'][0]['height'];
-										$message->width = $inMessage['photo'][0]['width'];
-									}
-									else{
-										continue;
-									}
-
-									$message->save();
-
-									//end of copying
-
-							}
-
-							return 'Ok';
-					}
-
-					return 'Ok';
-				}
-					$inMessage = $updates['message'];
-					$telegram_id = $inMessage['from']['id'];
+                            $message->file_name = $inMessage['document']['file_name'];
+                            $message->mime_type = $inMessage['document']['mime_type'];
+                            $message->file_id   = $inMessage['document']['file_id'];
+                            $message->file_size = $inMessage['document']['file_size'];
 
 
-						$user = \App\User::where('telegram_id',$telegram_id)->first();
+                        } else if (array_key_exists('text', $inMessage)) {
 
-						if(!$user){
-							// first time message
-							$user = new \App\User;
-							$user->first_name = $inMessage['from']['first_name'];
-							$user->last_name = isset($inMessage['from']['last_name'])?$inMessage['from']['last_name']:" ";
-							$user->telegram_id = $inMessage['from']['id'];
-							$user->save();
-						}
-						if(! \App\Message::where('tel_msg_id',$inMessage['message_id'])->first()){
+                            $message->text = $inMessage['text'];
 
+                        } else if (array_key_exists('photo', $inMessage)) {
 
-							$wrapperMessage = new \App\Message;
-							$wrapperMessage->tel_msg_id = $inMessage['message_id'];
-							$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
+                            $message->file_id   = $inMessage['photo'][0]['file_id'];
+                            $message->file_size = $inMessage['photo'][0]['file_size'];
+                            $message->height    = $inMessage['photo'][0]['height'];
+                            $message->width     = $inMessage['photo'][0]['width'];
+                        } else {
+                            continue;
+                        }
 
+                        $message->save();
 
-							if(array_key_exists('document',$inMessage)){
-								$message = new \App\DocMessage;
-								$message->file_name = $inMessage['document']['file_name'];
-								$message->mime_type = $inMessage['document']['mime_type'];
-								$message->file_id= $inMessage['document']['file_id'];
-								$message->file_size = $inMessage['document']['file_size'];
+                        //end of copying
 
+                    }
 
-							}
-							else if(array_key_exists('text',$inMessage)){
-								$message = new \App\TextMessage;
-								$message->text = $inMessage['text'];
+                    return 'Ok';
+                }
 
-							}
-							else if(array_key_exists('photo',$inMessage)){
-								$message = new \App\Photo;
-								$message->file_id = $inMessage['photo'][0]['file_id'];
-								$message->file_size = $inMessage['photo'][0]['file_size'];
-								$message->height= $inMessage['photo'][0]['height'];
-								$message->width = $inMessage['photo'][0]['width'];
-							}
-							else{
-								continue;
-							}
-
-							$message->save();
-
-												// $wrapperMessage->user()->save($user);
-
-							$message->message()->save($wrapperMessage);
-							$user->messages()->save($wrapperMessage);
-
-						}
-							}
-
-
-		return 'Ok';
-
-	}
-	public function handle(Request $request)
-	{
-
-		$updates = Telegram::getWebhookUpdates();
-	//	$updates = Telegram::commandsHandler(true);
-
-	if(!array_key_exists('message',$updates)){
-		if(array_key_exists('edited_message',$updates)){
-				if( \App\Message::where('tel_msg_id',$updates['message_id'])->first()){
-						$curMsg = \App\Message::where('tel_msg_id',$updates['message_id'])->first();
-
-						$inMessage = $updates['message'];
-						$message = $curMsg->messagable;
-						if(array_key_exists('document',$inMessage)){
-
-							$message->file_name = $inMessage['document']['file_name'];
-							$message->mime_type = $inMessage['document']['mime_type'];
-							$message->file_id= $inMessage['document']['file_id'];
-							$message->file_size = $inMessage['document']['file_size'];
-
-
-						}
-						else if(array_key_exists('text',$inMessage)){
-
-							$message->text = $inMessage['text'];
-
-						}
-						else if(array_key_exists('photo',$inMessage)){
-
-							$message->file_id = $inMessage['photo'][0]['file_id'];
-							$message->file_size = $inMessage['photo'][0]['file_size'];
-							$message->height= $inMessage['photo'][0]['height'];
-							$message->width = $inMessage['photo'][0]['width'];
-						}
-						else{
-							return 'Ok';
-						}
-
-						$message->save();
-
-						//end of copying
-
-				}
-
-				return 'Ok';
-		}
-
-		return 'Ok';
-	}
-
-		$inMessage = $updates['message'];
-		$telegram_id = $inMessage['from']['id'];
-
-		$user = \App\User::where('telegram_id',$telegram_id)->first();
-
-		if(!$user){
-			// first time message
-			$user = new \App\User;
-			$user->first_name = $inMessage['from']['first_name'];
-			$user->last_name = isset($inMessage['from']['last_name'])?$inMessage['from']['last_name']:" ";
-			$user->telegram_id = $inMessage['from']['id'];
-			$user->save();
-		}
+                return 'O2k';
+            }
+            $inMessage   = $updates['message'];
+            $telegram_id = $inMessage['from']['id'];
 
 
 
-		if(! \App\Message::where('tel_msg_id',$inMessage['message_id'])->first()){
-			if(array_key_exists('document',$inMessage)){
-				$message = new \App\DocMessage;
-				$message->file_name = $inMessage['document']['file_name'];
-				$message->mime_type = $inMessage['document']['mime_type'];
-				$message->file_id= $inMessage['document']['file_id'];
-				$message->file_size = $inMessage['document']['file_size'];
+
+            $user = \App\User::where('telegram_id', $telegram_id)->first();
+
+            if (!$user) {
+                // first time message
+                $user              = new \App\User;
+                $user->first_name  = $inMessage['from']['first_name'];
+                $user->last_name   = isset($inMessage['from']['last_name']) ? $inMessage['from']['last_name'] : " ";
+                $user->telegram_id = $inMessage['from']['id'];
+                $user->save();
+            }
+            if (!\App\Message::where('tel_msg_id', $inMessage['message_id'])->first()) {
 
 
-			}
-			else if(array_key_exists('text',$inMessage)){
-				$message = new \App\TextMessage;
-				$message->text = $inMessage['text'];
-
-			}
-			else if(array_key_exists('photo',$inMessage)){
-				$message = new \App\Photo;
-				$message->file_id = $inMessage['photo'][0]['file_id'];
-				$message->file_size = $inMessage['photo'][0]['file_size'];
-				$message->height= $inMessage['photo'][0]['height'];
-				$message->width = $inMessage['photo'][0]['width'];
-			}
-			else{
-				return 'Ok';
-			}
-
-			$message->save();
-
-			$wrapperMessage = new \App\Message;
-			$wrapperMessage->tel_msg_id = $inMessage['message_id'];
-			$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
-			// $wrapperMessage->user()->save($user);
-
-			$message->message()->save($wrapperMessage);
-			$user->messages()->save($wrapperMessage);
-
-			return 'Ok';
+                $wrapperMessage             = new \App\Message;
+                $wrapperMessage->tel_msg_id = $inMessage['message_id'];
+                $wrapperMessage->sent_on    = date('Y-m-d', $inMessage['date']);
 
 
-		}
+                if (array_key_exists('document', $inMessage)) {
+                    $message            = new \App\DocMessage;
+                    $message->file_name = $inMessage['document']['file_name'];
+                    $message->mime_type = $inMessage['document']['mime_type'];
+                    $message->file_id   = $inMessage['document']['file_id'];
+                    $message->file_size = $inMessage['document']['file_size'];
 
-	 }
+
+                } else if (array_key_exists('text', $inMessage)) {
+                    $message       = new \App\TextMessage;
+                    $message->text = $inMessage['text'];
+
+                } else if (array_key_exists('photo', $inMessage)) {
+                    $message            = new \App\Photo;
+                    $message->file_id   = $inMessage['photo'][0]['file_id'];
+                    $message->file_size = $inMessage['photo'][0]['file_size'];
+                    $message->height    = $inMessage['photo'][0]['height'];
+                    $message->width     = $inMessage['photo'][0]['width'];
+                } else {
+                    continue;
+                }
+
+                $message->save();
+
+                // $wrapperMessage->user()->save($user);
+
+                $message->message()->save($wrapperMessage);
+                $user->messages()->save($wrapperMessage);
+
+
+            }
+        }
+
+
+        return 'Ok';
+
+    }
+    public function handle(Request $request)
+    {
+
+        $updates = Telegram::getWebhookUpdates();
+        //	$updates = Telegram::commandsHandler(true);
+
+        if (!array_key_exists('message', $updates)) {
+            if (array_key_exists('edited_message', $updates)) {
+                if (\App\Message::where('tel_msg_id', $updates['message_id'])->first()) {
+                    $curMsg = \App\Message::where('tel_msg_id', $updates['message_id'])->first();
+
+                    $inMessage = $updates['message'];
+                    $message   = $curMsg->messagable;
+                    if (array_key_exists('document', $inMessage)) {
+
+                        $message->file_name = $inMessage['document']['file_name'];
+                        $message->mime_type = $inMessage['document']['mime_type'];
+                        $message->file_id   = $inMessage['document']['file_id'];
+                        $message->file_size = $inMessage['document']['file_size'];
+
+
+                    } else if (array_key_exists('text', $inMessage)) {
+
+                        $message->text = $inMessage['text'];
+
+                    } else if (array_key_exists('photo', $inMessage)) {
+
+                        $message->file_id   = $inMessage['photo'][0]['file_id'];
+                        $message->file_size = $inMessage['photo'][0]['file_size'];
+                        $message->height    = $inMessage['photo'][0]['height'];
+                        $message->width     = $inMessage['photo'][0]['width'];
+                    } else {
+                        return 'Ok';
+                    }
+
+                    $message->save();
+
+                    //end of copying
+
+                }
+
+                return 'Ok';
+            }
+
+            return 'Ok';
+        }
+
+        $inMessage   = $updates['message'];
+        $telegram_id = $inMessage['from']['id'];
+
+        $user = \App\User::where('telegram_id', $telegram_id)->first();
+
+        if (!$user) {
+            // first time message
+            $user              = new \App\User;
+            $user->first_name  = $inMessage['from']['first_name'];
+            $user->last_name   = isset($inMessage['from']['last_name']) ? $inMessage['from']['last_name'] : " ";
+            $user->telegram_id = $inMessage['from']['id'];
+            $user->save();
+        }
+
+
+
+        if (!\App\Message::where('tel_msg_id', $inMessage['message_id'])->first()) {
+            if (array_key_exists('document', $inMessage)) {
+                $message            = new \App\DocMessage;
+                $message->file_name = $inMessage['document']['file_name'];
+                $message->mime_type = $inMessage['document']['mime_type'];
+                $message->file_id   = $inMessage['document']['file_id'];
+                $message->file_size = $inMessage['document']['file_size'];
+
+
+            } else if (array_key_exists('text', $inMessage)) {
+                $message       = new \App\TextMessage;
+                $message->text = $inMessage['text'];
+
+            } else if (array_key_exists('photo', $inMessage)) {
+                $message            = new \App\Photo;
+                $message->file_id   = $inMessage['photo'][0]['file_id'];
+                $message->file_size = $inMessage['photo'][0]['file_size'];
+                $message->height    = $inMessage['photo'][0]['height'];
+                $message->width     = $inMessage['photo'][0]['width'];
+            } else {
+                return 'Ok';
+            }
+
+            $message->save();
+
+            $wrapperMessage             = new \App\Message;
+            $wrapperMessage->tel_msg_id = $inMessage['message_id'];
+            $wrapperMessage->sent_on    = date('Y-m-d', $inMessage['date']);
+            // $wrapperMessage->user()->save($user);
+
+            $message->message()->save($wrapperMessage);
+            $user->messages()->save($wrapperMessage);
+
+            return 'Successfully Inserted';
+
+
+        }
+
+    }
 }
