@@ -16,10 +16,53 @@ class WebhookController extends Controller
 
 		foreach($update as $updates){
 
+				if(!array_key_exists('message',$updates)){
+					if(array_key_exists('edited_message',$updates)){
+							if( \App\Message::where('tel_msg_id',$updates['message_id'])->first()){
+									$curMsg = \App\Message::where('tel_msg_id',$updates['message_id'])->first();
+
+									$inMessage = $updates['message'];
+									$message = $curMsg->messagable;
+									if(array_key_exists('document',$inMessage)){
+
+										$message->file_name = $inMessage['document']['file_name'];
+										$message->mime_type = $inMessage['document']['mime_type'];
+										$message->file_id= $inMessage['document']['file_id'];
+										$message->file_size = $inMessage['document']['file_size'];
+
+
+									}
+									else if(array_key_exists('text',$inMessage)){
+
+										$message->text = $inMessage['text'];
+
+									}
+									else if(array_key_exists('photo',$inMessage)){
+
+										$message->file_id = $inMessage['photo'][0]['file_id'];
+										$message->file_size = $inMessage['photo'][0]['file_size'];
+										$message->height= $inMessage['photo'][0]['height'];
+										$message->width = $inMessage['photo'][0]['width'];
+									}
+									else{
+										continue;
+									}
+
+									$message->save();
+
+									//end of copying
+
+							}
+
+							return 'Ok';
+					}
+
+					return 'Ok';
+				}
 					$inMessage = $updates['message'];
 					$telegram_id = $inMessage['from']['id'];
 
-								
+
 						$user = \App\User::where('telegram_id',$telegram_id)->first();
 
 						if(!$user){
@@ -33,10 +76,10 @@ class WebhookController extends Controller
 						if(! \App\Message::where('tel_msg_id',$inMessage['message_id'])->first()){
 
 
-		$wrapperMessage = new \App\Message;
+							$wrapperMessage = new \App\Message;
 							$wrapperMessage->tel_msg_id = $inMessage['message_id'];
 							$wrapperMessage->sent_on = date('Y-m-d',$inMessage['date']);
-	
+
 
 							if(array_key_exists('document',$inMessage)){
 								$message = new \App\DocMessage;
@@ -83,6 +126,50 @@ class WebhookController extends Controller
 		$updates = Telegram::getWebhookUpdates();
 	//	$updates = Telegram::commandsHandler(true);
 
+	if(!array_key_exists('message',$updates)){
+		if(array_key_exists('edited_message',$updates)){
+				if( \App\Message::where('tel_msg_id',$updates['message_id'])->first()){
+						$curMsg = \App\Message::where('tel_msg_id',$updates['message_id'])->first();
+
+						$inMessage = $updates['message'];
+						$message = $curMsg->messagable;
+						if(array_key_exists('document',$inMessage)){
+
+							$message->file_name = $inMessage['document']['file_name'];
+							$message->mime_type = $inMessage['document']['mime_type'];
+							$message->file_id= $inMessage['document']['file_id'];
+							$message->file_size = $inMessage['document']['file_size'];
+
+
+						}
+						else if(array_key_exists('text',$inMessage)){
+
+							$message->text = $inMessage['text'];
+
+						}
+						else if(array_key_exists('photo',$inMessage)){
+
+							$message->file_id = $inMessage['photo'][0]['file_id'];
+							$message->file_size = $inMessage['photo'][0]['file_size'];
+							$message->height= $inMessage['photo'][0]['height'];
+							$message->width = $inMessage['photo'][0]['width'];
+						}
+						else{
+							return 'Ok';
+						}
+
+						$message->save();
+
+						//end of copying
+
+				}
+
+				return 'Ok';
+		}
+
+		return 'Ok';
+	}
+
 		$inMessage = $updates['message'];
 		$telegram_id = $inMessage['from']['id'];
 
@@ -97,7 +184,9 @@ class WebhookController extends Controller
 			$user->save();
 		}
 
-		
+
+
+		if(! \App\Message::where('tel_msg_id',$inMessage['message_id'])->first()){
 			if(array_key_exists('document',$inMessage)){
 				$message = new \App\DocMessage;
 				$message->file_name = $inMessage['document']['file_name'];
@@ -120,7 +209,7 @@ class WebhookController extends Controller
 				$message->width = $inMessage['photo'][0]['width'];
 			}
 			else{
-				return 'Unknown Request';
+				return 'Ok';
 			}
 
 			$message->save();
@@ -133,7 +222,10 @@ class WebhookController extends Controller
 			$message->message()->save($wrapperMessage);
 			$user->messages()->save($wrapperMessage);
 
-			return $wrapperMessage;
+			return 'Ok';
+
+
+		}
 
 	 }
 }
