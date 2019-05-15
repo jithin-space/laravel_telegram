@@ -13,7 +13,7 @@ class WebhookController extends Controller
     {
         $update = Telegram::getUpdates();
 
-// echo json_encode($update);
+        echo count($update);
 
         foreach ($update as $updates) {
 
@@ -22,11 +22,16 @@ class WebhookController extends Controller
 						// echo json_encode($updates['message']);
 
             if (!isset($updates['message'])) {
-                if (isset($updates['edited_message'])) {
-                    if (\App\Message::where('tel_msg_id', $updates['message_id'])->first()) {
-                        $curMsg = \App\Message::where('tel_msg_id', $updates['message_id'])->first();
 
-                        $inMessage = $updates['message'];
+                if (isset($updates['edited_message'])) {
+                  $inMessage = $updates['edited_message'];
+
+                  // echo json_encode($inMessage['message_id']);
+                    if (\App\Message::where('tel_msg_id', $inMessage['message_id'])->first()) {
+
+                        $curMsg = \App\Message::where('tel_msg_id', $inMessage['message_id'])->first();
+
+                        // echo json_encode($curMsg);
                         $message   = $curMsg->messagable;
                         if (array_key_exists('document', $inMessage)) {
 
@@ -56,16 +61,19 @@ class WebhookController extends Controller
 
                     }
 
-                    return 'Ok';
+                    continue;
                 }
 
-                return 'O2k';
+                continue;
+
             }
+
+
+
+            echo "new Message Entering\n";
+            echo json_encode($updates);
             $inMessage   = $updates['message'];
             $telegram_id = $inMessage['from']['id'];
-
-
-
 
             $user = \App\User::where('telegram_id', $telegram_id)->first();
 
@@ -114,12 +122,14 @@ class WebhookController extends Controller
                 $message->message()->save($wrapperMessage);
                 $user->messages()->save($wrapperMessage);
 
+                echo "new Message";
+
 
             }
         }
 
 
-        return 'Ok';
+        return 'Ok-Loop';
 
     }
     public function handle(Request $request)
@@ -130,10 +140,12 @@ class WebhookController extends Controller
 
         if (!isset($updates['message'])) {
             if (isset($updates['edited_message'])) {
-                if (\App\Message::where('tel_msg_id', $updates['message_id'])->first()) {
-                    $curMsg = \App\Message::where('tel_msg_id', $updates['message_id'])->first();
 
-                    $inMessage = $updates['message'];
+                $inMessage = $updates['edited_message'];
+                if (\App\Message::where('tel_msg_id', $inMessage['message_id'])->first()) {
+                    $curMsg = \App\Message::where('tel_msg_id', $inMessage['message_id'])->first();
+
+
                     $message   = $curMsg->messagable;
                     if (array_key_exists('document', $inMessage)) {
 
